@@ -1,1 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#153b66">
+  <title>ScamShield | Stay Safe Online</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f6fc;
+      color: #243047;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #153b66, #2875bd);
+      color: white;
+      text-align: center;
+      padding: 30px 16px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    main {
+      max-width: 760px;
+      width: 92%;
+      margin: 25px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px #20304712;
+    }
+
+    h2 {
+      color: #153b66;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 14px 0 6px;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      font: inherit;
+      border: 1px solid #bdcadd;
+      border-radius: 9px;
+      background: white;
+      color: #243047;
+    }
+
+    textarea {
+      min-height: 145px;
+      resize: vertical;
+    }
+
+    button, .report-link {
+      padding: 11px 14px;
+      border: none;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin: 5px 4px 5px 0;
+    }
+
+    button:focus-visible, select:focus-visible,
+    textarea:focus-visible, a:focus-visible {
+      outline: 3px solid #8bbcff;
+      outline-offset: 2px;
+    }
+
+    .primary {
+      width: 100%;
+      background: #2168b5;
+      color: white;
+      margin-top: 12px;
+    }
+
+    .primary:hover {
+      background: #174f8e;
+    }
+
+    .sample, .voice {
+      background: #e8eff9;
+      color: #153b66;
+    }
+
+    #result {
+      display: none;
+      padding: 17px;
+      border-radius: 10px;
+      margin-top: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    #result h3 {
+      margin-bottom: 8px;
+    }
+
+    .high {
+      background: #fff0f0;
+      border: 1px solid #e6a5a5;
+    }
+
+    .medium {
+      background: #fff7e3;
+      border: 1px solid #e5cb79;
+    }
+
+    .low {
+      background: #eaf8ef;
+      border: 1px solid #a5d6b3;
+    }
+
+    .report-link {
+      background: #a62a2a;
+      color: white;
+      margin-top: 12px;
+    }
+
+    .muted {
+      color: #5e6c80;
+      font-size: 14px;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #5e6c80;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 27px; }
+      .card { padding: 17px; }
+      .sample, .voice { margin-top: 7px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🛡️ ScamShield</h1>
+    <p><strong>Pause. Check. Stay Safe.</strong></p>
+    <p>A little help for safer online decisions.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2 id="heading">Check a suspicious message</h2>
+
+      <p id="intro">
+        Received a strange SMS, WhatsApp message, or payment request?
+        Paste it below. ScamShield will look for common warning signs
+        and explain what you can do next.
+      </p>
+
+      <label id="languageLabel" for="language">
+        Choose your language
+      </label>
+
+      <select id="language">
+        <option value="en">English</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+      </select>
+
+      <label id="messageLabel" for="message">
+        Paste your message here
+      </label>
+
+      <textarea id="message"
+        placeholder="Example: Your bank account will be blocked. Enter your OTP immediately."
+      ></textarea>
+
+      <button class="primary" id="checkButton">
+        🔍 Check Message
+      </button>
+
+      <p id="sampleLabel" style="margin-top:15px">
+        <strong>Try an example:</strong>
+      </p>
+
+      <button class="sample" data-sample="bank" id="bankButton">
+        Bank warning
+      </button>
+
+      <button class="sample" data-sample="prize" id="prizeButton">
+        Prize message
+      </button>
+
+      <button class="sample" data-sample="normal" id="normalButton">
+        Normal message
+      </button>
+
+      <div id="result" role="status" aria-live="polite">
+        <h3 id="verdict"></h3>
+        <p id="explanation"></p>
+        <p id="reasons"></p>
+        <p id="advice"></p>
+
+        <button class="voice" id="readButton">
+          🔊 Read result aloud
+        </button>
+
+        <button class="voice" id="stopButton">
+          ⏹ Stop voice
+        </button>
+
+        <br>
+
+        <a class="report-link"
+          href="https://cybercrime.gov.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          id="reportLink">
+          Report cybercrime in India ↗
+        </a>
+
+        <p class="muted" id="caution" style="margin-top:12px">
+          This is a basic checker, not a guarantee. A message without
+          warning signs may still be a scam.
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 id="tipsHeading">💡 Simple safety tips</h2>
+      <ul id="tips">
+        <li>Never share your OTP, UPI PIN, or banking password.</li>
+        <li>Do not click unexpected links in messages.</li>
+        <li>Verify requests using your bank's official app or phone number.</li>
+        <li>If unsure, pause and ask someone you trust.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2 id="aboutHeading">About ScamShield</h2>
+      <p id="aboutText">
+        ScamShield is a simple digital safety project that helps people
+        recognise common signs of online scams.
+      </p>
+      <p class="muted" id="privacyText">
+        This prototype checks the message inside your browser. It does not
+        send the text to a server or check links against a live database.
+        Avoid entering passwords, OTPs, or private banking details.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built for a safer digital India 🇮🇳</p>
+    <p>ScamShield — Pause. Check. Stay Safe.</p>
+  </footer>
+
+  <script>
+    // Sample messages make it easy for anyone to try ScamShield.
+    const samples = {
+      bank: "URGENT! Your bank account will be blocked today. Click this link immediately and enter your OTP and PIN to keep your account active.",
+      prize: "Congratulations! You have won a cash prize. Pay a processing fee now to claim your reward.",
+      normal: "Hi! We will meet at 5 PM near the library. Please let me know when you arrive."
+    };
+
+    // These rules look for common warning signs.
+    // They cannot prove that a message is a scam.
+    const rules = [
+      {
+        pattern: /\botp\b|one[- ]time password/i,
+        en: "The message mentions an OTP.",
+        ta: "இந்தச் செய்தியில் OTP குறிப்பிடப்பட்டுள்ளது."
+      },
+      {
+        pattern: /\bupi pin\b|\bpin\b|\bpassword\b|login credentials/i,
+        en: "It mentions a PIN, password, or login details.",
+        ta: "PIN, கடவுச்சொல் அல்லது உள்நுழைவு விவரங்கள் குறிப்பிடப்பட்டுள்ளன."
+      },
+      {
+        pattern: /account.{0,35}(blocked|suspended|closed)|blocked.{0,35}account/i,
+        en: "It threatens that your account may be blocked.",
+        ta: "உங்கள் கணக்கு முடக்கப்படும் என்று மிரட்டுகிறது."
+      },
+      {
+        pattern: /urgent|immediately|act now|last warning|within \d+ hours/i,
+        en: "It pressures you to act quickly.",
+        ta: "உடனடியாகச் செயல்பட வேண்டும் என்று அவசரப்படுத்துகிறது."
+      },
+      {
+        pattern: /won a prize|cash prize|claim your reward|lottery winner|free gift/i,
+        en: "It promises a prize or reward.",
+        ta: "பரிசு அல்லது வெகுமதி கிடைக்கும் என்று கூறுகிறது."
+      },
+      {
+        pattern: /processing fee|pay.{0,25}(fee|charge).{0,25}(claim|prize|reward)/i,
+        en: "It may ask you to pay money to receive a reward.",
+        ta: "வெகுமதியைப் பெற பணம் செலுத்தச் சொல்லக்கூடும்."
+      },
+      {
+        pattern: /click (this|the) link|verify.{0,25}(account|details)|update.{0,25}(bank|kyc)/i,
+        en: "It asks you to click a link or verify details.",
+        ta: "இணைப்பை அழுத்தவோ விவரங்களைச் சரிபார்க்கவோ சொல்கிறது."
+      },
+      {
+        pattern: /remote access|screen sharing|install.{0,25}(app|application)/i,
+        en: "It mentions installing an app or giving remote access.",
+        ta: "செயலியை நிறுவவோ தொலைநிலை அணுகலை வழங்கவோ சொல்கிறது."
+      },
+      {
+        pattern: /send money|transfer money|pay now|upi collect|collect request/i,
+        en: "It asks for a payment or money transfer.",
+        ta: "பணம் செலுத்த அல்லது அனுப்பச் சொல்கிறது."
+      },
+      {
+        pattern: /kyc.{0,30}(expire|update|block)|pan card.{0,30}(block|update)/i,
+        en: "It mentions a KYC or identity document problem.",
+        ta: "KYC அல்லது அடையாள ஆவணம் தொடர்பான பிரச்சினையைக் குறிப்பிடுகிறது."
+      }
+    ];
+
+    const text = {
+      en: {
+        heading: "Check a suspicious message",
+        intro: "Received a strange SMS, WhatsApp message, or payment request? Paste it below. ScamShield will look for common warning signs and explain what you can do next.",
+        language: "Choose your language",
+        message: "Paste your message here",
+        placeholder: "Example: Your bank account will be blocked. Enter your OTP immediately.",
+        check: "🔍 Check Message",
+        sample: "Try an example:",
+        bank: "Bank warning",
+        prize: "Prize message",
+        normal: "Normal message",
+        tipsHeading: "💡 Simple safety tips",
+        tips: [
+          "Never share your OTP, UPI PIN, or banking password.",
+          "Do not click unexpected links in messages.",
+          "Verify requests using your bank's official app or phone number.",
+          "If unsure, pause and ask someone you trust."
+        ],
+        aboutHeading: "About ScamShield",
+        about: "ScamShield is a simple digital safety project that helps people recognise common signs of online scams.",
+        privacy: "This prototype checks the message inside your browser. It does not send the text to a server or check links against a live database. Avoid entering passwords, OTPs, or private banking details.",
+        high: "🚨 Several warning signs found",
+        medium: "⚠️ Be careful — this looks suspicious",
+        low: "ℹ️ No obvious warning signs found",
+        highExplain: "This message contains several phrases commonly associated with scams.",
+        mediumExplain: "This message contains a warning sign worth checking.",
+        lowExplain: "The checker did not find its known warning phrases. This does not prove that the message is safe.",
+        adviceHigh: "Do not click links or share your OTP, PIN, password, or banking details. Verify the request through an official channel.",
+        adviceMedium: "Pause before responding. Verify the sender independently. Do not share private information or send money until you have checked the request.",
+        adviceLow: "Stay alert. If the message asks for money or personal details, verify it independently before taking action.",
+        reasons: "Warning signs:",
+        noReasons: "No configured warning phrases were found.",
+        report: "Report cybercrime in India ↗",
+        caution: "This is a basic checker, not a guarantee. A message without warning signs may still be a scam.",
+        empty: "Please paste a message before checking.",
+        voiceError: "Voice reading is not supported by this browser.",
+        read: "🔊 Read result aloud",
+        stop: "⏹ Stop voice"
+      },
+
+      ta: {
+        heading: "சந்தேகமான செய்தியைச் சரிபார்க்கவும்",
+        intro: "சந்தேகமான SMS, WhatsApp செய்தி அல்லது பணம் கேட்கும் கோரிக்கை வந்ததா? செய்தியை கீழே ஒட்டுங்கள். பொதுவான எச்சரிக்கை அறிகுறிகளை ScamShield தேடும்.",
+        language: "மொழியைத் தேர்ந்தெடுக்கவும்",
+        message: "செய்தியை இங்கே ஒட்டவும்",
+        placeholder: "உதாரணம்: உங்கள் வங்கிக் கணக்கு முடக்கப்படும். உடனே OTP-ஐ உள்ளிடுங்கள்.",
+        check: "🔍 செய்தியைச் சரிபார்க்கவும்",
+        sample: "மாதிரி செய்தியை முயற்சிக்கவும்:",
+        bank: "வங்கி எச்சரிக்கை",
+        prize: "பரிசுச் செய்தி",
+        normal: "சாதாரண செய்தி",
+        tipsHeading: "💡 பாதுகாப்பு குறிப்புகள்",
+        tips: [
+          "OTP, UPI PIN அல்லது வங்கி கடவுச்சொல்லைப் பகிர வேண்டாம்.",
+          "அறியாத செய்திகளில் வரும் இணைப்புகளை அழுத்த வேண்டாம்.",
+          "வங்கியின் அதிகாரப்பூர்வ செயலி அல்லது தொலைபேசி மூலம் சரிபார்க்கவும்.",
+          "சந்தேகம் இருந்தால் நிறுத்தி நம்பகமான ஒருவரிடம் ஆலோசனை கேளுங்கள்."
+        ],
+        aboutHeading: "ScamShield பற்றி",
+        about: "ScamShield என்பது இணைய மோசடிகளின் பொதுவான அறிகுறிகளை அறிய உதவும் எளிய டிஜிட்டல் பாதுகாப்புத் திட்டம்.",
+        privacy: "இந்த மாதிரி உங்கள் உலாவியிலேயே செய்தியைச் சரிபார்க்கிறது. செய்தி சேவையகத்துக்கு அனுப்பப்படாது; இணைப்புகளும் நேரடியாகச் சரிபார்க்கப்படுவதில்லை. கடவுச்சொல் அல்லது OTP போன்ற ரகசிய விவரங்களை உள்ளிட வேண்டாம்.",
+        high: "🚨 பல எச்சரிக்கை அறிகுறிகள் உள்ளன",
+        medium: "⚠️ கவனமாக இருங்கள் — சந்தேகமான அறிகுறி உள்ளது",
+        low: "ℹ️ தெளிவான எச்சரிக்கை அறிகுறிகள் இல்லை",
+        highExplain: "இந்தச் செய்தியில் மோசடிகளுடன் தொடர்புடைய பல சொற்றொடர்கள் உள்ளன.",
+        mediumExplain: "இந்தச் செய்தியில் கவனமாகச் சரிபார்க்க வேண்டிய ஓர் அறிகுறி உள்ளது.",
+        lowExplain: "அறிந்த எச்சரிக்கைச் சொற்றொடர்கள் கிடைக்கவில்லை. இதனால் செய்தி பாதுகாப்பானது என்று உறுதி செய்ய முடியாது.",
+        adviceHigh: "இணைப்பை அழுத்தாதீர்கள். OTP, PIN அல்லது வங்கி விவரங்களைப் பகிர வேண்டாம். அதிகாரப்பூர்வ வழியில் சரிபார்க்கவும்.",
+        adviceMedium: "பதிலளிப்பதற்கு முன் நிறுத்துங்கள். அனுப்புநரைத் தனியாகச் சரிபார்க்கவும். உறுதிப்படுத்தும் வரை பணம் அனுப்பவோ விவரங்களைப் பகிரவோ வேண்டாம்.",
+        adviceLow: "எப்போதும் கவனமாக இருங்கள். பணம் அல்லது தனிப்பட்ட விவரங்கள் கேட்டால் தனியாகச் சரிபார்க்கவும்.",
+        reasons: "கவனிக்கப்பட்ட அறிகுறிகள்:",
+        noReasons: "குறிப்பிட்ட எச்சரிக்கைச் சொற்றொடர்கள் கிடைக்கவில்லை.",
+        report: "இந்தியாவில் சைபர் குற்றத்தைப் புகாரளிக்கவும் ↗",
+        caution: "இது அடிப்படைச் சரிபார்ப்பு மட்டுமே. எச்சரிக்கை அறிகுறிகள் இல்லாத செய்தியும் மோசடியாக இருக்கலாம்.",
+        empty: "முதலில் ஒரு செய்தியை ஒட்டவும்.",
+        voiceError: "இந்த உலாவியில் குரல் வாசிப்பு வசதி இல்லை.",
+        read: "🔊 முடிவை ஒலியாகக் கேளுங்கள்",
+        stop: "⏹ ஒலியை நிறுத்தவும்"
+      }
+    };
+
+    const $ = id => document.getElementById(id);
+    let spokenResult = "";
+
+    // Update the page text when the user changes language.
+    function setLanguage() {
+      const lang = $("language").value;
+      const t = text[lang];
+
+      document.documentElement.lang = lang;
+
+      $("heading").textContent = t.heading;
+      $("intro").textContent = t.intro;
+      $("languageLabel").textContent = t.language;
+      $("messageLabel").textContent = t.message;
+      $("message").placeholder = t.placeholder;
+      $("checkButton").textContent = t.check;
+      $("sampleLabel").textContent = t.sample;
+      $("bankButton").textContent = t.bank;
+      $("prizeButton").textContent = t.prize;
+      $("normalButton").textContent = t.normal;
+      $("tipsHeading").textContent = t.tipsHeading;
+      $("aboutHeading").textContent = t.aboutHeading;
+      $("aboutText").textContent = t.about;
+      $("privacyText").textContent = t.privacy;
+      $("reportLink").textContent = t.report;
+      $("caution").textContent = t.caution;
+      $("readButton").textContent = t.read;
+      $("stopButton").textContent = t.stop;
+
+      $("tips").replaceChildren(
+        ...t.tips.map(item => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          return li;
+        })
+      );
+
+      // Refresh a visible result in the selected language.
+      if ($("result").style.display === "block") {
+        checkMessage(false);
+      }
+    }
+
+    function loadSample(type) {
+      $("message").value = samples[type];
+      checkMessage();
+    }
+
+    function checkMessage(showAlert = true) {
+      const message = $("message").value.trim();
+      const lang = $("language").value;
+      const t = text[lang];
+
+      if (!message) {
+        if (showAlert) alert(t.empty);
+        $("message").focus();
+        return;
+      }
+
+      const matchedRules = rules.filter(rule =>
+        rule.pattern.test(message)
+      );
+
+      let risk, heading, explanation, advice;
+
+      if (matchedRules.length >= 2) {
+        risk = "high";
+        heading = t.high;
+        explanation = t.highExplain;
+        advice = t.adviceHigh;
+      } else if (matchedRules.length === 1) {
+        risk = "medium";
+        heading = t.medium;
+        explanation = t.mediumExplain;
+        advice = t.adviceMedium;
+      } else {
+        risk = "low";
+        heading = t.low;
+        explanation = t.lowExplain;
+        advice = t.adviceLow;
+      }
+
+      $("result").className = risk;
+      $("verdict").textContent = heading;
+      $("explanation").textContent = explanation;
+      $("advice").textContent = advice;
+
+      if (matchedRules.length > 0) {
+        const reasons = matchedRules.map(rule =>
+          lang === "ta" ? rule.ta : rule.en
+        );
+
+        $("reasons").textContent =
+          t.reasons + " " + reasons.join(" ");
+      } else {
+        $("reasons").textContent = t.noReasons;
+      }
+
+      $("result").style.display = "block";
+
+      spokenResult = [
+        heading,
+        explanation,
+        $("reasons").textContent,
+        advice
+      ].join(". ");
+    }
+
+    function readResult() {
+      const lang = $("language").value;
+
+      if (!("speechSynthesis" in window)) {
+        alert(text[lang].voiceError);
+        return;
+      }
+
+      if ($("result").style.display !== "block") {
+        checkMessage();
+        if ($("result").style.display !== "block") return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const speech = new SpeechSynthesisUtterance(spokenResult);
+      speech.lang = lang === "ta" ? "ta-IN" : "en-IN";
+      speech.rate = 0.9;
+
+      window.speechSynthesis.speak(speech);
+    }
+
+    function stopVoice() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    $("language").addEventListener("change", setLanguage);
+    $("checkButton").addEventListener("click", () => checkMessage());
+    $("bankButton").addEventListener("click", () => loadSample("bank"));
+    $("prizeButton").addEventListener("click", () => loadSample("prize"));
+    $("normalButton").addEventListener("click", () => loadSample("normal"));
+    $("readButton").addEventListener("click", readResult);
+    $("stopButton").addEventListener("click", stopVoice);
+
+    setLanguage();
+  </script>
+</body>
+</html>
